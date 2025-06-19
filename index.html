@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daegu YMCA English Practice Game</title>
+  <style>
+    :root {
+      --primary: #004f98; /* YMCA blue */
+      --accent: #fbd103;  /* YMCA yellow */
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f4f6fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    select {
+      font-size: 16px;
+      padding: 10px;
+      border-radius: 5px;
+      width: 220px;
+      background-color: #fff;
+      border: 2px solid #004f98;
+      color: #004f98;
+      cursor: pointer;
+    }
+    .container {
+      text-align: center;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #004f98;
+      margin-bottom: 20px;
+    }
+    .card {
+      background-color: #fbd103;
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      cursor: pointer;
+      font-size: 18px;
+      transition: transform 0.3s;
+    }
+    .card:hover {
+      transform: scale(1.05);
+    }
+    button {
+      background-color: #004f98;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #003870;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Daegu YMCA English Practice Game</h2>
+    <select id="categorySelect">
+      <!-- Categories will be populated here -->
+    </select>
+
+    <div id="sentenceContainer">
+      <!-- Sentences will be displayed here -->
+    </div>
+
+    <div>
+      <button onclick="previousCard()">Previous</button>
+      <button onclick="nextCard()">Next</button>
+      <button onclick="resetGame()">Reset</button>
+      <button onclick="speakSentence()">🔊 Speak</button>
+    </div>
+  </div>
+
+  <script>
+    const categories = [
+      {
+        name: "Reception Greetings",
+        sentences: [
+          { en: "Good evening, distinguished guests, and welcome to Daegu YMCA.", ko: "저녁입니다, 존경하는 손님 여러분, 대구 YMCA에 오신 것을 환영합니다." },
+          { en: "We are delighted to have you join us for this special occasion.", ko: "이 특별한 행사에 여러분을 모시게 되어 기쁩니다." },
+          { en: "Thank you for honoring us with your presence tonight.", ko: "오늘 이 자리에 함께 해 주셔서 감사합니다." },
+          { en: "It is a privilege to gather with friends from near and far.", ko: "가깝고 먼 곳에서 온 친구들과 함께 모이게 되어 영광입니다." },
+          { en: "We are excited to share this moment with you.", ko: "이 순간을 여러분과 함께 나누게 되어 기쁩니다." }
+        ]
+      },
+      {
+        name: "YMCA Introduction",
+        sentences: [
+          { en: "Daegu YMCA has been a community hub for over 100 years.", ko: "대구 YMCA는 100년 이상의 역사를 자랑하는 지역 사회의 중심입니다." },
+          { en: "We focus on empowering youth and building strong communities.", ko: "우리는 청소년을 Empower하고 강한 공동체를 만드는 데 중점을 두고 있습니다." },
+          { en: "YMCA has been a beacon of hope for many in the community.", ko: "YMCA는 지역사회에서 많은 이들에게 희망의 등대 역할을 해왔습니다." },
+          { en: "Our mission is to make a positive difference in the lives of individuals.", ko: "우리의 사명은 개인들의 삶에 긍정적인 변화를 만드는 것입니다." },
+          { en: "We strive to serve the community through various programs and initiatives.", ko: "우리는 다양한 프로그램과 이니셔티브를 통해 지역 사회에 봉사하고 있습니다." }
+        ]
+      },
+      {
+        name: "Weather-related Greetings",
+        sentences: [
+          { en: "The weather today is absolutely beautiful, isn't it?", ko: "오늘 날씨는 정말 아름답네요, 그렇죠?" },
+          { en: "It looks like we are going to have great weather for this event.", ko: "이번 행사를 위한 날씨가 정말 좋을 것 같습니다." },
+          { en: "The sun is shining brightly, perfect for a day outside.", ko: "햇볕이 밝게 비추고 있습니다. 밖에서 보내기 좋은 날입니다." },
+          { en: "I hope you're all enjoying this lovely weather.", ko: "이 멋진 날씨를 모두 즐기고 계시기를 바랍니다." },
+          { en: "We couldn't have asked for better weather for today.", ko: "오늘 날씨보다 더 좋은 날씨를 바랄 수는 없었겠죠." }
+        ]
+      },
+      {
+        name: "Small Talk with Guests",
+        sentences: [
+          { en: "How have you been since we last met?", ko: "지난번 만난 이후로 어떻게 지내셨어요?" },
+          { en: "I hope you're finding everything comfortable here.", ko: "여기에서 모든 것이 편안하시기를 바랍니다." },
+          { en: "It's so nice to see familiar faces again.", ko: "다시 친숙한 얼굴들을 보게 되어 너무 좋습니다." },
+          { en: "Is this your first time visiting Daegu?", ko: "대구는 처음 방문하시나요?" },
+          { en: "Have you had a chance to explore the city?", ko: "도시를 둘러볼 기회는 있으셨나요?" }
+        ]
+      },
+      {
+        name: "YMCA Values",
+        sentences: [
+          { en: "At YMCA, we believe in nurturing the mind, body, and spirit.", ko: "YMCA에서는 마음, 몸, 정신을 기르는 것이 중요하다고 믿습니다." },
+          { en: "We are committed to building strong communities for everyone.", ko: "우리는 모두를 위한 강한 공동체를 만드는 데 헌신하고 있습니다." },
+          { en: "Our values of inclusion, care, and respect are central to everything we do.", ko: "우리의 포용, 배려, 존중의 가치는 우리가 하는 모든 일의 중심입니다." },
+          { en: "YMCA is a place where people of all backgrounds can come together.", ko: "YMCA는 다양한 배경을 가진 사람들이 함께 모일 수 있는 장소입니다." },
+          { en: "We promote social responsibility and a sense of community in every activity.", ko: "우리는 모든 활동에서 사회적 책임과 공동체 의식을 증진합니다." }
+        ]
+      },
+      // Add additional categories and sentences as needed
+    ];
+
+    let currentCategoryIndex = 0;
+    let currentSentenceIndex = 0;
+
+    function populateCategories() {
+      const select = document.getElementById('categorySelect');
+      categories.forEach((category, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.innerText = category.name;
+        select.appendChild(option);
+      });
+    }
+
+    function displaySentences() {
+      const sentenceContainer = document.getElementById('sentenceContainer');
+      const currentCategory = categories[currentCategoryIndex];
+      sentenceContainer.innerHTML = ''; // Clear current sentences
+
+      const sentence = currentCategory.sentences[currentSentenceIndex];
+      const card = document.createElement('div');
+      card.classList.add('card');
+      card.innerText = sentence.en;
+      card.onclick = function () { toggleLanguage(card, sentence); };
+      sentenceContainer.appendChild(card);
+    }
+
+    function toggleLanguage(card, sentence) {
+      if (card.innerText === sentence.en) {
+        card.innerText = sentence.ko;
+      } else {
+        card.innerText = sentence.en;
+      }
+    }
+
+    function previousCard() {
+      if (currentSentenceIndex > 0) {
+        currentSentenceIndex--;
+        displaySentences();
+      }
+    }
+
+    function nextCard() {
+      const currentCategory = categories[currentCategoryIndex];
+      if (currentSentenceIndex < currentCategory.sentences.length - 1) {
+        currentSentenceIndex++;
+        displaySentences();
+      }
+    }
+
+    function resetGame() {
+      currentSentenceIndex = 0;
+      displaySentences();
+    }
+
+    document.getElementById('categorySelect').addEventListener('change', (e) => {
+      currentCategoryIndex = e.target.value;
+      currentSentenceIndex = 0;
+      displaySentences();
+    });
+
+    function speakSentence() {
+      const currentCategory = categories[currentCategoryIndex];
+      const sentence = currentCategory.sentences[currentSentenceIndex];
+      const utterance = new SpeechSynthesisUtterance(sentence.en);
+      utterance.lang = 'en-US';  // Setting to a natural-sounding voice
+      speechSynthesis.speak(utterance);
+    }
+
+    populateCategories();
+    displaySentences();
+  </script>
+
+</body>
+</html>
